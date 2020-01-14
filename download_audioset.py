@@ -50,7 +50,7 @@ def parse_arguments():
                         dest='ffmpeg_path',
                         action='store',
                         type=str,
-                        default='./bin/ffmpeg/ffmpeg',
+                        default='/usr/bin/ffmpeg',
                         help='Path to ffmpeg executable')
 
     parser.add_argument('-fp',
@@ -58,7 +58,7 @@ def parse_arguments():
                         dest='ffprobe_path',
                         action='store',
                         type=str,
-                        default='./bin/ffmpeg/ffprobe',
+                        default='/usr/bin/ffprobe',
                         help='Path to ffprobe executable')
 
     parser.add_argument('-e',
@@ -168,7 +168,7 @@ def parse_arguments():
                         dest='num_workers',
                         action='store',
                         type=int,
-                        default=4,
+                        default=12,
                         help='Number of multiprocessing workers used to download videos')
 
     parser.add_argument('-nl',
@@ -196,8 +196,8 @@ def parse_arguments():
     parser.add_argument('data_dir',
                         action='store',
                         type=str,
+                        default='../Data',
                         help='Path to directory where AudioSet data will be stored')
-
 
     return vars(parser.parse_args())
 
@@ -654,10 +654,10 @@ def download_subset_videos(subset_path, data_dir, ffmpeg_path, ffprobe_path,
     LOGGER.info('Starting download jobs for subset "{}"'.format(subset_name))
     with open(subset_path, 'r') as f:
         subset_data = csv.reader(f)
-
         # Set up multiprocessing pool
         pool = mp.Pool(num_workers)
         try:
+            # print(total_row)
             for row_idx, row in enumerate(subset_data):
                 # Skip commented lines
                 if row[0][0] == '#':
@@ -885,10 +885,13 @@ def download_audioset(data_dir, ffmpeg_path, ffprobe_path, eval_segments_path,
     multiprocessing_logging.install_mp_handler()
     LOGGER.debug('Initialized logging.')
 
-    download_subset(eval_segments_path, data_dir, ffmpeg_path, ffprobe_path,
-                    num_workers, **ffmpeg_cfg)
-    download_subset(balanced_train_segments_path, data_dir, ffmpeg_path, ffprobe_path,
-                    num_workers, **ffmpeg_cfg)
+    # 1898, 3845, 4387,
+    # download_subset(eval_segments_path, data_dir, ffmpeg_path, ffprobe_path,
+    #                 num_workers, **ffmpeg_cfg)
+    # 7527, 9031, 9066, 9071
+    # download_subset(balanced_train_segments_path, data_dir, ffmpeg_path, ffprobe_path,
+    #                 num_workers, **ffmpeg_cfg)
+    # 40564
     download_subset(unbalanced_train_segments_path, data_dir, ffmpeg_path, ffprobe_path,
                     num_workers, **ffmpeg_cfg)
 
